@@ -17,4 +17,4 @@ The database can be found at `mysql --host=127.0.0.1 --port=32000 -u root -p`
 Password is `root`. 
 
 When refreshing database:
-- Execute `docker-compose rm -fv db` to refresh the database after stopping the docker image. 
+- Execute `docker-compose rm -fv db` after stopping the docker image. 
