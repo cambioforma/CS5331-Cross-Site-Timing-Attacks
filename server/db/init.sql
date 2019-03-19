@@ -4,12 +4,12 @@ use CS5331;
 CREATE TABLE timing
 (
 id INT NOT NULL AUTO_INCREMENT,
-target VARCHAR(64) NOT NULL,
+url VARCHAR(64) NOT NULL,
 time TIMESTAMP NOT NULL,
-diff INT NOT NULL,
+sequence INT NOT NULL,
 PRIMARY KEY(ID)
 );
 
-INSERT INTO timing(target, time, diff)
-VALUES ('test','2019-03-17 19:00:11.999999',2);
+INSERT INTO timing(url, time, sequence)
+VALUES ('test', '2019-03-17 19:00:11.999999', 2);
  
