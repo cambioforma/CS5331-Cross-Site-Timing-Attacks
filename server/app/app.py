@@ -1,6 +1,7 @@
 #!flask/bin/python
 from typing import List, Dict
 from flask import Flask, request
+from crawler import getImages
 import mysql.connector
 import json
 import datetime
@@ -18,7 +19,8 @@ config = {
 }
 
 errorMessage = 'Error: Missing Information.'
-
+failUpdate = 'ERROR: Database not updated.'
+successUpdate = 'SUCCESS: Database updated.'
 
 def getTimeFromDB(url) -> List[Dict]:
     connection = mysql.connector.connect(**config)
@@ -30,6 +32,7 @@ def getTimeFromDB(url) -> List[Dict]:
     row_headers=[x[0] for x in cursor.description]
     rv = cursor.fetchall()
     json_data=[]
+    
     for row in rv:
         app.logger.info(row)
         _id = row[0]
@@ -53,6 +56,29 @@ def getTimeFromDB(url) -> List[Dict]:
     
     return json_data
     
+def getImagesFromDB(name):
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor(prepared=True)
+    
+    cursor.execute('SELECT * FROM image where name = %s', (name,))
+    
+    # extract row headers
+    row_headers=[x[0] for x in cursor.description]
+    rv = cursor.fetchall()
+    
+    data=[]
+    for row in rv:
+        app.logger.info(row)
+        #name = row[0].decode()
+        #base_url = row[1].decode()
+        img_url = row[2].decode()
+        
+        data.append(img_url)
+    
+    cursor.close()
+    connection.close()
+    
+    return data
 def converter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
@@ -64,12 +90,42 @@ def insertTimeToDB(data):
     statement = "INSERT INTO timing(cookie, url, time, sequence) VALUES (%s, %s, %s, %s)"
     
     for key in data.keys():
-        value = (data[key]['cookie'], data[key]['url'], data[key]['time'], data[key]['sequence'])
-        
-        cursor.execute(statement, value)
-        connection.commit()
+        try:
+            value = (data[key]['cookie'], data[key]['url'], data[key]['time'], data[key]['sequence'])
+            
+            cursor.execute(statement, value)
+            connection.commit()
+        except Exception as e:
+            app.logger.info(e)
+    connection.close()
+    
+def insertImgTODB(base_url, name, images):
+    connection = mysql.connector.connect(**config)
+    
+    cursor = connection.cursor(prepared=True)
+    statement = "INSERT INTO image(name, base_url, img_url) VALUES (%s, %s, %s)"
+    
+    for link in images:
+        try:
+            value = (name, base_url, link)
+            
+            cursor.execute(statement, value)
+            connection.commit()
+        except Exception as e:
+            app.logger.info(e)
     
     connection.close()
+    
+def crawlURL(base_url, name):
+    images = getImages(base_url)
+    
+    try:
+        insertImgTODB(base_url, name, images)
+        return True
+    except Exception as e:
+        app.logger.info(e)
+        return False
+     
     
 def checkJSONTiming(data):
     keys = data.keys()
@@ -84,7 +140,7 @@ def checkJSONTiming(data):
     except:
         return False
         
-@app.route('/add', methods=['POST'])
+@app.route('/addTiming', methods=['POST'])
 def addTiming():
     data = request.get_json()
     
@@ -95,6 +151,43 @@ def addTiming():
         return 'Data inserted.'
     else:
         return errorMesssage
+        
+@app.route('/addImages', methods=['POST'])
+def addImg():
+    data = request.get_json()
+    
+    base_url = ''
+    name = ''
+    
+    try:
+        base_url = data['base_url'].lower()
+        name = data['name'].lower()
+        
+        if base_url == '' or name == '':
+            return 'Empty values are not accepted.'
+        
+        app.logger.info(base_url)
+        app.logger.info(name)
+    except Exception as e:
+        app.logger.info(e)
+        return 'Missing attribute. Ensure base_url and name are supplied.'
+    
+    isSuccess = crawlURL(base_url, name)
+    
+    if isSuccess:
+        return successUpdate
+        
+    return failUpdate
+    
+@app.route('/getImages', methods=['GET'])
+def getImgByName():
+    name = request.args.get('name', default = '', type = str)
+    
+    if name == '':
+        return errorMessage
+    else:
+        return json.dumps(getImagesFromDB(name), default=converter)
+    
 
 @app.route('/getTiming', methods=['GET'])
 def getTiming():

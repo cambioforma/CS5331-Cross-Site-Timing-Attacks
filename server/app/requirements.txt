@@ -1,2 +1,5 @@
 Flask
 mysql-connector
+beautifulsoup4
+requests
+lxml
