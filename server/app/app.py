@@ -1,7 +1,7 @@
 #!flask/bin/python
 from typing import List, Dict
 from flask import Flask, request
-from crawler import getImages
+from scraper import getImages
 import mysql.connector
 import json
 import datetime

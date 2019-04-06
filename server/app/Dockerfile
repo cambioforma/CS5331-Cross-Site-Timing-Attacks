@@ -16,5 +16,5 @@ RUN pip install -r requirements.txt
 
 # Run app.py when the container launches
 COPY app.py /app
-COPY crawler.py /app
+COPY scraper.py /app
 CMD python app.py
