@@ -11,6 +11,14 @@ sequence INT NOT NULL,
 PRIMARY KEY(ID)
 );
 
+CREATE TABLE image
+(
+name VARCHAR(64) NOT NULL, 
+base_url VARCHAR(64) NOT NULL,
+img_url VARCHAR(64) NOT NULL,
+PRIMARY KEY(name, img_url)
+);
+
 INSERT INTO timing(cookie, url, time, sequence)
 VALUES ('COOKIEVALUE', 'test.com', '2019-03-17 19:00:11.999999', 2);
  
