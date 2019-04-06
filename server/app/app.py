@@ -1,6 +1,6 @@
 #!flask/bin/python
 from typing import List, Dict
-from flask import Flask, request
+from flask import Flask, request, render_template
 from scraper import getImages
 import mysql.connector
 import json
@@ -17,6 +17,10 @@ config = {
     'port': '3306',
     'database': 'CS5331'
 }
+
+@app.route('/', methods=['GET'])
+def hello_test():
+    return render_template("test.html")
 
 errorMessage = 'Error: Missing Information.'
 failUpdate = 'ERROR: Database not updated.'
