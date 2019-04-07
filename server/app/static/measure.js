@@ -8,20 +8,15 @@ function getAndSendUrlLoadTime() {
 	// 1) >0: Unblocked domain
 	// 2) 0 : CORS blocked domain
 	// 3) -1: Unaccessible domain (network errors etc.)
-	var urlPromise = getUrlAccessTime(url);
+	var accessTimeArr = [];
 	
-	// Waits for getUrlAccessTime(url) to finish execution before resuming
-	urlPromise.then(function(accessTime) {
-		// Run all the functions
-		console.log("Finished running loadUrl");
-		console.log(accessTime);
+	// Measurement method: Loop 4 times
+	repeatAccessTimeMeasurement(4, url, accessTimeArr).then(function() {
+		//console.log("DONE");
 		
-		// Step 3: Store access time
-		var accessTimeJson = storeAccessTime(url, accessTime);
-
 		// Step 4: Send access time
-		//sendAccessTimeToServer(accessTimeJson);	
-	});
+		sendAccessTimeToServer(accessTimeArr);
+	});	
 }
 
 // Step 1 : Retrieve URL from server
@@ -33,6 +28,9 @@ function getUrl() {
 	//var url = 'https://ivle.nus.edu.sg/v1/content/assets/images/ivle-logo.png';
 	
 	// Unexisting URL -> return -1
+	// Chrome: Display 404 (correct)
+	// Firefox: Display CORS blocked
+	// Difference: might be due to their implementation, but correct return value
 	//var url = 'https://ivle.nus.edu.sg/v1/content/assets/images/icelogo.png';
 	
 	// Successful domain -> return accessTime
@@ -41,12 +39,28 @@ function getUrl() {
 }
 
 // Step 2 : Get access time of an arbitrary URL
+// Repeat execution 4 times
+function repeatAccessTimeMeasurement(count, url, accessTimeArr) {
+	if (count == 0) {
+		return Promise.resolve();
+	}
+	
+	return measureUrlAccessTime(url).then(function(accessTime) {
+		//console.log(accessTime);
+		
+		// Step 3: Store access time
+		var accessTimeJson = storeAccessTime(url, accessTime);
+		accessTimeArr.push(accessTimeJson);
+		
+		return repeatAccessTimeMeasurement(count-1, url, accessTimeArr);
+	});
+}
+
 // Step 2a: Measure current time before loading URL
 // Step 2b: Load an arbitrary URL
 // Step 2c: Measure current time after loading URL
 // Step 2d: Compute access time of URL (successful loading)
-function getUrlAccessTime(url) {
-	console.log("Entered loadUrl");
+function measureUrlAccessTime(url) {
 	return new Promise(function(resolve, reject) {
 		var startTime = null;
 		var endTime = null;
@@ -56,13 +70,13 @@ function getUrlAccessTime(url) {
 		xhr.open("GET", url, true);
 
 		xhr.onload = function() {
-			console.log("Entered xhr.onload");
+			//console.log("Entered xhr.onload");
 			endTime = performance.now();
 			resolve(endTime-startTime);
 		}
 		
 		xhr.onerror = function() {
-			console.log("Entered xhr.onerror");
+			//console.log("Entered xhr.onerror");
 			resolve(loadImage(url));
 		}
 		
@@ -74,20 +88,19 @@ function getUrlAccessTime(url) {
 
 // Detect CORS blocking by loading as an img tag
 function loadImage(url) {
-	console.log("Entered loadImage");
 	return new Promise(function(resolve, reject) {
 		var image = document.createElement('img');
 		
 		// Other kind of errors
 		image.onerror = function() {
-			console.log(url, "other kind of errors");
+			//console.log(url, "other kind of errors");
 			endTime = -1;
 			resolve(endTime);
 		}
 		
 		// Image exists but CORS blocked
 		image.onload = function() {
-			console.log(url, "image exists but cors blocked");
+			//console.log(url, "image exists but cors blocked");
 			endTime = 0;
 			resolve(endTime);
 		}
@@ -99,12 +112,15 @@ function loadImage(url) {
 // Step 3 : Store access time in JSON format
 function storeAccessTime(url, accessTime) {
 	var cookie = "abc";
-	var sequence = 0;
-	var accessTimeJson = { "cookie" : cookie, "url" : url, "time" : accessTime, "sequence" : sequence };
-	console.log(accessTimeJson);
+	var accessTimeJson = { "cookie" : cookie, "url" : url, "time" : accessTime};
+	
+	//console.log(accessTimeJson);
+	return accessTimeJson;
 }
 
 // Step 4 : Send access time JSON to server
-function sendAccessTimeToServer(accessTimeJson) {
+function sendAccessTimeToServer(accessTimeArr) {
 	// TODO
+	console.log("Entered sendAccessTimeToServer");
+	console.log(accessTimeArr);
 }
