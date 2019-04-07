@@ -44,13 +44,15 @@ def getTimeFromDB(url) -> List[Dict]:
         url = row[2].decode()
         time = row[3]
         sequence = row[4]
+        currentDatetime = row[5]
         
         d = {
             'id': _id,
             'cookie': cookie,
             'url': url,
             'time': time,
-            'sequence': sequence
+            'sequence': sequence,
+            'currentDatetime': currentDatetime
         }
         
         json_data.append(d)
@@ -83,6 +85,7 @@ def getImagesFromDB(name):
     connection.close()
     
     return data
+    
 def converter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
@@ -91,11 +94,11 @@ def insertTimeToDB(data):
     connection = mysql.connector.connect(**config)
     
     cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO timing(cookie, url, time, sequence) VALUES (%s, %s, %s, %s)"
+    statement = "INSERT INTO timing(cookie, url, time, sequence, currentDatetime) VALUES (%s, %s, %s, %s, %s)"
     
     for key in data.keys():
         try:
-            value = (data[key]['cookie'], data[key]['url'], data[key]['time'], data[key]['sequence'])
+            value = (data[key]['cookie'], data[key]['url'], data[key]['time'], data[key]['sequence'], str(datetime.datetime.now()))
             
             cursor.execute(statement, value)
             connection.commit()
@@ -190,7 +193,7 @@ def getImgByName():
     if name == '':
         return errorMessage
     else:
-        return json.dumps(getImagesFromDB(name), default=converter)
+        return json.dumps(getImagesFromDB(name))
     
 
 @app.route('/getTiming', methods=['GET'])
