@@ -1,11 +1,12 @@
 #!flask/bin/python
 from typing import List, Dict
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, make_response
 from scraper import getImages
 import mysql.connector
 import json
 import datetime
 import logging
+import random
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -19,12 +20,20 @@ config = {
 }
 
 @app.route('/', methods=['GET'])
-def hello_test():
-    return render_template("test.html")
+def index():
+	resp = make_response(render_template("index.html"))
+	if 'userId' in request.cookies:
+		user = request.cookies.get('userId')
+	else:
+		uid = random.randint(1,2**64)
+		resp.set_cookie('userId', str(uid))
+
+	return resp
 
 errorMessage = 'Error: Missing Information.'
 failUpdate = 'ERROR: Database not updated.'
 successUpdate = 'SUCCESS: Database updated.'
+
 
 def getTimeFromDB(url) -> List[Dict]:
     connection = mysql.connector.connect(**config)
