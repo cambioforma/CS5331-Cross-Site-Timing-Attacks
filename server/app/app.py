@@ -214,5 +214,13 @@ def getTiming():
     else:
         return json.dumps(getTimeFromDB(url), default=converter)
 
+@app.route('/admin', methods=['GET'])
+def admin():
+	return render_template("admin.html")
+
+@app.route('/results', methods=['GET'])
+def results():
+	return render_template("results.html")
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
