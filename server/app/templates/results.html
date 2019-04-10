@@ -1,0 +1,54 @@
+<html>
+   <head>
+      <title>Google Charts Tutorial</title>
+      <script type = "text/javascript" src = "https://www.gstatic.com/charts/loader.js">
+      </script>
+      <script type = "text/javascript">
+         google.charts.load('current', {packages: ['corechart']});     
+      </script>
+   </head>
+   
+   <body>
+      <div id = "container" style = "width: 550px; height: 400px; margin: 0 auto">
+      </div>
+      <script language = "JavaScript">
+		var url = '/results/test'; //A local page
+		var jsonData = "temp";
+
+		function load(url, callback) {
+			var xhr = new XMLHttpRequest();
+
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4) {
+				  callback(xhr.response);
+				}
+			}
+
+			xhr.open('GET', url, true);
+			xhr.send('');
+		}
+
+		function drawChart(jsonData) {
+			// Define the chart to be drawn.
+			var data = google.visualization.arrayToDataTable(window.value);
+			var options = {title: 'Loading time (in seconds)'}; 
+
+			// Instantiate and draw the chart.
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+		//load(url, callback);
+		//google.charts.setOnLoadCallback(drawChart);
+
+		const request = async () => {
+			const response = await fetch('/results/test');
+			const json = await response.json();
+			window.value = json;
+			google.charts.setOnLoadCallback(drawChart);
+		}
+
+		request();
+
+      </script>
+   </body>
+</html>

@@ -8,6 +8,7 @@ import json
 import datetime
 import logging
 import random
+
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -137,8 +138,22 @@ def admin():
     return render_template("admin.html", imglist=imglist)
 
 @app.route('/results', methods=['GET'])
-def results():
-	return render_template("results.html")
+@app.route('/results/<id>', methods=['GET'])
+def results(id=None):
+	data = [
+		['Year', 'Website X'],
+		['2012',  900],
+		['2013',  1000],
+		['2014',  1170],
+		['2015',  1250],
+		['2016',  1530]
+	];
+	if id is None:
+		return render_template("results.html", data=json.dumps(data))
+	else:
+		resp = make_response(json.dumps(data))
+		resp.headers['content-type'] = 'application/json'
+		return resp
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
