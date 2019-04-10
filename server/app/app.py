@@ -1,6 +1,6 @@
 #!flask/bin/python
 from typing import List, Dict
-from flask import Flask, request, render_template, make_response
+from flask import Flask, request, render_template, make_response, redirect, url_for
 from scraper import getImages
 import mysql.connector
 import json
@@ -19,6 +19,10 @@ config = {
     'database': 'CS5331'
 }
 
+errorMessage = 'Error: Missing Information.'
+failUpdate = 'ERROR: Database not updated.'
+successUpdate = 'SUCCESS: Database updated.'
+
 @app.route('/', methods=['GET'])
 def index():
 	resp = make_response(render_template("index.html"))
@@ -29,11 +33,6 @@ def index():
 		resp.set_cookie('userId', str(uid))
 
 	return resp
-
-errorMessage = 'Error: Missing Information.'
-failUpdate = 'ERROR: Database not updated.'
-successUpdate = 'SUCCESS: Database updated.'
-
 
 def getTimeFromDB(url) -> List[Dict]:
     connection = mysql.connector.connect(**config)
@@ -99,16 +98,17 @@ def converter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
         
-def insertTimeToDB(data):
+def insertTimeToDB(data, cookie):
     connection = mysql.connector.connect(**config)
     
     cursor = connection.cursor(prepared=True)
     statement = "INSERT INTO timing(cookie, url, time, sequence, currentDatetime) VALUES (%s, %s, %s, %s, %s)"
     
+    seq = 0
     for key in data.keys():
         try:
-            value = (data[key]['cookie'], data[key]['url'], data[key]['time'], data[key]['sequence'], str(datetime.datetime.now()))
-            
+            value = (cookie, data[key]['url'], data[key]['time'], seq, str(datetime.datetime.now()))
+            seq = seq + 1
             cursor.execute(statement, value)
             connection.commit()
         except Exception as e:
@@ -146,7 +146,7 @@ def crawlURL(base_url, name):
 def checkJSONTiming(data):
     keys = data.keys()
     
-    fields = ['cookie', 'url', 'time', 'sequence']
+    fields = ['url', 'time']
     try: 
         for key in keys:
             for field in fields:
@@ -160,10 +160,16 @@ def checkJSONTiming(data):
 def addTiming():
     data = request.get_json()
     
+    cookie = ''
+    if 'userId' in request.cookies:
+	    cookie = request.cookies.get('userId')
+    else:
+        return redirect(url_for('index'))
+    
     isPass = checkJSONTiming(data)
     
     if isPass:
-        insertTimeToDB(data)
+        insertTimeToDB(data, cookie)
         return 'Data inserted.'
     else:
         return errorMesssage
