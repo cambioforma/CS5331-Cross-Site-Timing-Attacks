@@ -10,6 +10,8 @@ def getImages(url):
     images = []
     for img in soup.findAll('img'):
         src = img.get('src')
+        if src is None:
+            continue
         if 'http' not in src:
             continue
         images.append(src)

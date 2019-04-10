@@ -2,6 +2,7 @@
 from typing import List, Dict
 from flask import Flask, request, render_template, make_response, redirect, url_for
 from scraper import getImages
+from database import *
 import mysql.connector
 import json
 import datetime
@@ -33,105 +34,11 @@ def index():
 		resp.set_cookie('userId', str(uid))
 
 	return resp
-
-def getTimeFromDB(url) -> List[Dict]:
-    connection = mysql.connector.connect(**config)
-    cursor = connection.cursor(prepared=True)
-    
-    cursor.execute('SELECT * FROM timing where url = %s', (url,))
-    
-    # extract row headers
-    row_headers=[x[0] for x in cursor.description]
-    rv = cursor.fetchall()
-    json_data=[]
-    
-    for row in rv:
-        app.logger.info(row)
-        _id = row[0]
-        cookie = row[1].decode()
-        url = row[2].decode()
-        time = row[3]
-        sequence = row[4]
-        currentDatetime = row[5]
-        
-        d = {
-            'id': _id,
-            'cookie': cookie,
-            'url': url,
-            'time': time,
-            'sequence': sequence,
-            'currentDatetime': currentDatetime
-        }
-        
-        json_data.append(d)
-    
-    cursor.close()
-    connection.close()
-    
-    return json_data
-    
-def getImagesFromDB(name):
-    connection = mysql.connector.connect(**config)
-    cursor = connection.cursor(prepared=True)
-    
-    cursor.execute('SELECT * FROM image where name = %s', (name,))
-    
-    # extract row headers
-    row_headers=[x[0] for x in cursor.description]
-    rv = cursor.fetchall()
-    
-    data=[]
-    for row in rv:
-        app.logger.info(row)
-        #name = row[0].decode()
-        #base_url = row[1].decode()
-        img_url = row[2].decode()
-        
-        data.append(img_url)
-    
-    cursor.close()
-    connection.close()
-    
-    return data
     
 def converter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
         
-def insertTimeToDB(data, cookie):
-    connection = mysql.connector.connect(**config)
-    
-    cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO timing(cookie, url, time, sequence, currentDatetime) VALUES (%s, %s, %s, %s, %s)"
-    
-    seq = 0
-    for key in data.keys():
-        try:
-            value = (cookie, data[key]['url'], data[key]['time'], seq, str(datetime.datetime.now()))
-            seq = seq + 1
-            cursor.execute(statement, value)
-            connection.commit()
-        except Exception as e:
-            app.logger.info(e)
-    connection.close()
-    
-def insertImgTODB(base_url, name, images):
-    connection = mysql.connector.connect(**config)
-    
-    cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO image(name, base_url, img_url) VALUES (%s, %s, %s)"
-    
-    for link in images:
-        try:
-            value = (name, base_url, link)
-            
-            cursor.execute(statement, value)
-            connection.commit()
-        except Exception as e:
-            app.logger.info(e)
-    
-    connection.close()
-    
 def crawlURL(base_url, name):
     images = getImages(base_url)
     
@@ -208,7 +115,10 @@ def getImgByName():
     if name == '':
         return errorMessage
     else:
-        return json.dumps(getImagesFromDB(name))
+        result = getImagesFromDB(name)
+        if len(result) == 0:
+            return "No results found"
+        return json.dumps(result)
     
 
 @app.route('/getTiming', methods=['GET'])
@@ -222,7 +132,8 @@ def getTiming():
 
 @app.route('/admin', methods=['GET'])
 def admin():
-	return render_template("admin.html")
+    imglist = getNameOfWebsiteFromDB()
+    return render_template("admin.html", imglist=imglist)
 
 @app.route('/results', methods=['GET'])
 def results():
