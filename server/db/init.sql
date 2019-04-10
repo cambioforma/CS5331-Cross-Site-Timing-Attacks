@@ -16,7 +16,7 @@ CREATE TABLE image
 (
 name VARCHAR(64) NOT NULL, 
 base_url VARCHAR(64) NOT NULL,
-img_url VARCHAR(64) NOT NULL,
+img_url VARCHAR(1024) NOT NULL,
 PRIMARY KEY(name, img_url)
 );
 

@@ -5,18 +5,29 @@
 </head>
 <body>
 	<h2>Admin Pannel</h2>
-	<p>The select element defines a drop-down list:</p>
+	
+	
+	<p>Step 1: Enter test site details</p>
+	<form action="/addImages" method="POST">
+	    <p>Name: <input type = "text" name = "name" /></p>
+	    <p>Base URL: <input type = "text" name = "base_url" /></p>
+		<input type="submit" value="Get test site links">
+	</form>
+	
+	<br/><br/>
+	<p>Step 2: Select test site name</p>
 
-	<form action="/admin">
-		<select name="webpages">
+	<form action="/getImages" method="GET">
+		<select name="sitename">
 		{% for name in imglist %} 
-		    <option value="webpage1">{{name}}</option>
+		    <option value="{{name}}">{{name}}</option>
 		{% endfor %}
 		</select>
 		<br><br>
-		<input type="submit">
+		<input type="submit" value="Display test site links">
 	</form>
-
+	
+	<br/><br/>
 	
 	<a href="/results">Click here to view results</a>
 </body>

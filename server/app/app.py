@@ -83,14 +83,14 @@ def addTiming():
         
 @app.route('/addImages', methods=['POST'])
 def addImg():
-    data = request.get_json()
-    
+    data = request.form.to_dict(flat=False)
+    app.logger.info(data)
     base_url = ''
     name = ''
     
     try:
-        base_url = data['base_url'].lower()
-        name = data['name'].lower()
+        base_url = data['base_url'][0].lower()
+        name = data['name'][0].lower()
         
         if base_url == '' or name == '':
             return 'Empty values are not accepted.'
@@ -110,7 +110,8 @@ def addImg():
     
 @app.route('/getImages', methods=['GET'])
 def getImgByName():
-    name = request.args.get('name', default = '', type = str)
+    #name = request.args.get('name', default = '', type = str)
+    name = request.args.get('sitename', default = '', type = str)
     
     if name == '':
         return errorMessage
