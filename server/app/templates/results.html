@@ -28,17 +28,25 @@
 			xhr.send('');
 		}
 
-		function drawChart(jsonData) {
+		function drawChart() {
 			// Define the chart to be drawn.
-			var data = google.visualization.arrayToDataTable(window.value);
-			var options = {title: 'Loading time (in miliseconds)'}; 
+			var data = new google.visualization.DataTable();
+			data.addColumn('number', 'Percentage Difference');
+			data.addColumn('number', 'ID');
+			data.addRows(window.value);
+			   
+			// Set chart options
+			var options = {
+			   'title':'Percentage Difference',
+			   'width':550,
+			   'height':400,
+			   'legend': 'none'
+			};
 
 			// Instantiate and draw the chart.
-			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			var chart = new google.visualization.ScatterChart(document.getElementById('container'));
 			chart.draw(data, options);
 		}
-		//load(url, callback);
-		//google.charts.setOnLoadCallback(drawChart);
 
 		const request = async () => {
 			const response = await fetch('/results/test');
