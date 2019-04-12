@@ -52,9 +52,10 @@ def crawlURL(base_url, name):
      
     
 def checkJSONTiming(data):
+    print(data)
     keys = data.keys()
     
-    fields = ['url', 'time']
+    fields = ['url', 'time', 'cookie']
     try: 
         for key in keys:
             for field in fields:
@@ -63,24 +64,21 @@ def checkJSONTiming(data):
         return True
     except:
         return False
-        
+    
 @app.route('/addTiming', methods=['POST'])
 def addTiming():
     data = request.get_json()
-    
-    cookie = ''
-    if 'userId' in request.cookies:
-	    cookie = request.cookies.get('userId')
-    else:
-        return redirect(url_for('index'))
-    
-    isPass = checkJSONTiming(data)
-    
+    print('data is ' + str(data))
+    #isPass = checkJSONTiming(data)
+    isPass = True
     if isPass:
-        insertTimeToDB(data, cookie)
-        return 'Data inserted.'
+        result = insertTimeToDB(data)
+        if result:
+            return 'Data inserted.'
+        else:
+            return errorMessage
     else:
-        return errorMesssage
+        return errorMessage
         
 @app.route('/addImages', methods=['POST'])
 def addImg():
@@ -130,6 +128,8 @@ def getTiming():
     if url == '':
         return errorMessage
     else:
+        result = getTimeFromDB(url)
+        app.logger.info(result)
         return json.dumps(getTimeFromDB(url), default=converter)
 
 @app.route('/admin', methods=['GET'])

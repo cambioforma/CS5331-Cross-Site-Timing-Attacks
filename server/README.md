@@ -32,7 +32,7 @@ timing(cookie, url, time, sequence)
 ### Timing
 Use POST method and supply the timing details in the form of JSON. 
 Example using curl:
-`curl --header "Content-Type: applicatioest POST --data '{"0":{"url":"hello.com","time":"60"},"1":{"url":"hello.com","time":"30"},"2":{"url":"hello.com","time":"22"},"3":{"url":"hello.com","time":"25"}}' http://127.0.0.1:5000/addTiming  -v --cookie "userId=123abc"`
+`curl --header "Content-Type: application/json" --request POST --data '{"0":{"cookie": "userId=123abc", "url":"hello.com","time":"60"},"1":{"cookie": "userId=123abc", "url":"hello.com","time":"30"},"2":{"cookie": "userId=123abc", "url":"hello.com","time":"22"},"3":{"cookie": "userId=123abc", "url":"hello.com","time":"25"}}' http://127.0.0.1:5000/addTiming -v`
 
 ### Image resource links
 Use POST method and supply the base_url and name of website in the form of JSON.

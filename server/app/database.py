@@ -1,6 +1,7 @@
 #!flask/bin/python
 from typing import List, Dict
 import mysql.connector
+import datetime
 
 config = {
     'user': 'root',
@@ -15,7 +16,7 @@ def getTimeFromDB(url) -> List[Dict]:
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor(prepared=True)
     
-    cursor.execute('SELECT * FROM timing where url = %s', (url,))
+    cursor.execute('SELECT * FROM experiment where url = %s', (url,))
     
     # extract row headers
     row_headers=[x[0] for x in cursor.description]
@@ -26,16 +27,20 @@ def getTimeFromDB(url) -> List[Dict]:
         _id = row[0]
         cookie = row[1].decode()
         url = row[2].decode()
-        time = row[3]
-        sequence = row[4]
-        currentDatetime = row[5]
+        time1 = row[3]
+        time2 = row[4]
+        time3 = row[5]
+        time4 = row[6]
+        currentDatetime = row[7]
         
         d = {
             'id': _id,
             'cookie': cookie,
             'url': url,
-            'time': time,
-            'sequence': sequence,
+            'time1': time1,
+            'time2': time2,
+            'time3': time3,
+            'time4': time4,
             'currentDatetime': currentDatetime
         }
         
@@ -92,24 +97,24 @@ def getImagesFromDB(name):
     
     return data
     
-    
-
-def insertTimeToDB(data, cookie):
+def insertTimeToDB(data):
     connection = mysql.connector.connect(**config)
     
     cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO timing(cookie, url, time, sequence, currentDatetime) VALUES (%s, %s, %s, %s, %s)"
+    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     
-    seq = 0
-    for key in data.keys():
+    if len(data.keys()) < 4:
+        return False
+    else:
         try:
-            value = (cookie, data[key]['url'], data[key]['time'], seq, str(datetime.datetime.now()))
-            seq = seq + 1
+            value = (data['0']['cookie'], data['0']['url'], data['0']['time'], data['1']['time'], data['2']['time'], data['3']['time'], str(datetime.datetime.now()))
             cursor.execute(statement, value)
             connection.commit()
         except Exception as e:
             print(str(e))
+            return False
     connection.close()
+    return True
     
 def insertImgTODB(base_url, name, images):
     connection = mysql.connector.connect(**config)
