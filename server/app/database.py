@@ -10,7 +10,35 @@ config = {
     'port': '3306',
     'database': 'CS5331'
 }
+def getResultsFromDB():
+	connection = mysql.connector.connect(**config)
+	cursor = connection.cursor(prepared=True)
 
+	cursor.execute('SELECT * FROM experiment')
+
+	# extract row headers
+	row_headers=[x[0] for x in cursor.description]
+	rv = cursor.fetchall()
+	json_data=[]
+
+	for row in rv:
+		_id = row[0]
+		cookie = row[1].decode()
+		url = row[2].decode()
+		time1 = row[3]
+		time2 = row[4]
+		time3 = row[5]
+		time4 = row[6]
+		currentDatetime = row[7]
+
+		diff=(time1-(time2 + time3 + time4)/3)/time1
+		d = [_id, diff]
+		json_data.append(d)
+
+	cursor.close()
+	connection.close()
+
+	return json_data 
 
 def getTimeFromDB(url) -> List[Dict]:
     connection = mysql.connector.connect(**config)

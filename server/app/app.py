@@ -144,6 +144,7 @@ def admin():
 @app.route('/results', methods=['GET'])
 @app.route('/results/<id>', methods=['GET'])
 def results(id=None):
+	'''
 	data = [
 		[ 8, 12],
 		[ 4, 5.5],
@@ -152,6 +153,9 @@ def results(id=None):
 		[ 3, 3.5],
 		[ 6.5, 7]
 	];
+	'''
+	data = getResultsFromDB()
+
 	if id is None:
 		return render_template("results.html", data=json.dumps(data))
 	else:
