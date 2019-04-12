@@ -64,31 +64,15 @@ def checkJSONTiming(data):
         return True
     except:
         return False
-
-def insertTimeToDB(data):
-    connection = mysql.connector.connect(**config)
-    
-    cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    
-    if len(data) < 4:
-        return False
-    else:
-        try:
-            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'], str(datetime.datetime.now()))
-            app.logger.info(value)
-            cursor.execute(statement, value)
-            connection.commit()
-        except Exception as e:
-            print(str(e))
-            return False
-    connection.close()
-    return True    
+ 
 
 @app.route('/addTiming', methods=['POST'])
 def addTiming():
     data = request.get_json()
-    app.logger.info('data is ' + str(data))
+    
+    if data is None:
+        return errorMessage
+    
     #isPass = checkJSONTiming(data)
     isPass = True
     if isPass:
