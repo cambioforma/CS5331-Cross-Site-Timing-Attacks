@@ -141,12 +141,12 @@ def admin():
 @app.route('/results/<id>', methods=['GET'])
 def results(id=None):
 	data = [
-		['Year', 'Website X'],
-		['2012',  900],
-		['2013',  1000],
-		['2014',  1170],
-		['2015',  1250],
-		['2016',  1530]
+		['Website', 'Time 1', 'Time 2'],
+		['Google',  900, 12],
+		['Yahoo',  1000, 23],
+		['Facebook',  1170, 45],
+		['Twitter',  1250, 56],
+		['Instagram',  1530, 78]
 	];
 	if id is None:
 		return render_template("results.html", data=json.dumps(data))
