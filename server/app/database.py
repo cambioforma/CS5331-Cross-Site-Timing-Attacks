@@ -97,24 +97,7 @@ def getImagesFromDB(name):
     
     return data
     
-def insertTimeToDB(data):
-    connection = mysql.connector.connect(**config)
-    
-    cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    
-    if len(data.keys()) < 4:
-        return False
-    else:
-        try:
-            value = (data['0']['cookie'], data['0']['url'], data['0']['time'], data['1']['time'], data['2']['time'], data['3']['time'], str(datetime.datetime.now()))
-            cursor.execute(statement, value)
-            connection.commit()
-        except Exception as e:
-            print(str(e))
-            return False
-    connection.close()
-    return True
+
     
 def insertImgTODB(base_url, name, images):
     connection = mysql.connector.connect(**config)

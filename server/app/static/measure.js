@@ -123,6 +123,10 @@ function sendAccessTimeToServer(accessTimeArr) {
 	// TODO
 	console.log("Entered sendAccessTimeToServer");
 	console.log(accessTimeArr);
-	$.post("http://127.0.0.1:5000/addTiming", accessTimeArr, function(){
-	});
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("POST", "/addTiming");
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.send(JSON.stringify(accessTimeArr));
+	//$.post("http://127.0.0.1:5000/addTiming", accessTimeArr, function(){
+	//});
 }

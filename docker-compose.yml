@@ -11,7 +11,7 @@ services:
     image: mysql:5.7
     ports:
       - "32000:3306"
+    command: --max_allowed_packet=256M
     environment:
       MYSQL_ROOT_PASSWORD: root
-    volumes:
-      - ./server/db:/docker-entrypoint-initdb.d/:ro
+      MYSQL_DATABASE: 'CS5331'
