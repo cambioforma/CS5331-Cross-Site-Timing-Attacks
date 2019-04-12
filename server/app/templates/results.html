@@ -49,7 +49,7 @@
 		}
 
 		const request = async () => {
-			const response = await fetch('/results/test');
+			const response = await fetch('/results/data');
 			const json = await response.json();
 			window.value = json;
 			google.charts.setOnLoadCallback(drawChart);

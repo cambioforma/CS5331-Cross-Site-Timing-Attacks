@@ -142,26 +142,18 @@ def admin():
     return render_template("admin.html", imglist=imglist)
 
 @app.route('/results', methods=['GET'])
-@app.route('/results/<id>', methods=['GET'])
-def results(id=None):
-	'''
-	data = [
-		[ 8, 12],
-		[ 4, 5.5],
-		[ 11, 14],
-		[ 4, 5],
-		[ 3, 3.5],
-		[ 6.5, 7]
-	];
-	'''
+@app.route('/results/<threshold>', methods=['GET'])
+def results(threshold=None):
 	data = getResultsFromDB()
 
-	if id is None:
+	if threshold is None:
 		return render_template("results.html", data=json.dumps(data))
-	else:
+	elif threshold=="data":
 		resp = make_response(json.dumps(data))
 		resp.headers['content-type'] = 'application/json'
 		return resp
+	else:
+		return render_template("results.html", data=json.dumps(data))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
