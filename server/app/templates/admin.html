@@ -2,33 +2,102 @@
 
 <html>
 <head>
-</head>
-<body>
-	<h2>Admin Pannel</h2>
-	
-	
-	<p>Step 1: Enter test site details</p>
-	<form action="/addImages" method="POST">
-	    <p>Name: <input type = "text" name = "name" /></p>
-	    <p>Base URL: <input type = "text" name = "base_url" /></p>
-		<input type="submit" value="Get test site links">
-	</form>
-	
-	<br/><br/>
-	<p>Step 2: Select test site name</p>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+main > .container {
+  padding: 60px 15px 0;
+}
 
-	<form action="/getImages" method="GET">
-		<select name="sitename">
-		{% for name in imglist %} 
-		    <option value="{{name}}">{{name}}</option>
-		{% endfor %}
-		</select>
-		<br><br>
-		<input type="submit" value="Display test site links">
-	</form>
+.footer {
+  background-color: #f5f5f5;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+code {
+  font-size: 80%;
+}
+</style>
+</head>
+<body class="d-flex flex-column h-100">
+    <header>
+    <!-- Fixed navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">CS5331-TOPIC</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+            </li>
+          </ul>
+          <form class="form-inline mt-2 mt-md-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </div>
+      </nav>
+    </header>
+
+    <main role="main" class="flex-shrink-0">
+	    <h2>Admin Pannel</h2>
+	    <div class="container">
+	        <h3 class-"mt-5">Step 1: Enter test site details</h3>
+	        <form action="/addImages" method="POST">
+	            <div class="form-group">
+	                <label>Name: </label>
+	                <input type = "text" class="form-control" name = "name" />
+                </div>
+                <div class="form-group">
+	                <label>Base URL:</label> 
+	                <input type = "text" class="form-control" name = "base_url" /></p>
+		            
+	            </div>
+	            <input type="submit" class="btn btn-primary" value="Get test site links">
+	        </form>
+	        
+	    </div>
+	    
+	    <div class="container">
+	        <h3 class-"mt-5">Step 2: Select test site name</h3>
+            {% if imglist|length > 0%}
+	            <form action="/getImages" method="GET">
+	                <div class="dropdown">
+		                <select name="sitename">
+		                
+		                {% for name in imglist %} 
+		                    <option value="{{name}}">{{name}}</option>
+		                {% endfor %}
+		                </select>
+		                <br><br>
+		                <input type="submit" class="btn btn-primary" value="Display test site links">
+	                </div>
+	            </form>
+            {% else %}
+                <p>No sites found. Please refer to step 1.</p>
+            {% endif %}
+	    
+	    </div>
+	    
+	    
+        <!-- <p><a href="/results">Click here to view results</a></p>Fixed navbar -->
+	</main>
 	
-	<br/><br/>
-	
-	<a href="/results">Click here to view results</a>
+	<!-- <footer class="footer mt-auto py-3">
+      <div class="container">
+        
+      </div>
+    </footer>-->
 </body>
 </html>
