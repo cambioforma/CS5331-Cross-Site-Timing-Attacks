@@ -75,7 +75,7 @@ def insertTimeToDB(data):
         return False
     else:
         try:
-            value = (data[0]['cookie'], '', data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'], str(datetime.datetime.now()))
+            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'], str(datetime.datetime.now()))
             app.logger.info(value)
             cursor.execute(statement, value)
             connection.commit()
