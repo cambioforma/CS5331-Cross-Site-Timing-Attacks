@@ -86,7 +86,7 @@ function measureUrlAccessTime(url) {
 	});	
 }
 
-// Detect CORS blocking by loading as an img tag
+// Detect CORS blocking by loading an img tag
 function loadImage(url) {
 	return new Promise(function(resolve, reject) {
 		var image = document.createElement('img');
@@ -123,4 +123,6 @@ function sendAccessTimeToServer(accessTimeArr) {
 	// TODO
 	console.log("Entered sendAccessTimeToServer");
 	console.log(accessTimeArr);
+	$.post("http://127.0.0.1:5000/addTiming", accessTimeArr, function(){
+	});
 }
