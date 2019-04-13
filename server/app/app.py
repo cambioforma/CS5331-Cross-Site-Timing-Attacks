@@ -194,10 +194,10 @@ def results(threshold=None):
 
 @app.route('/initdb', methods=['GET'])
 def init_db():
-    #scrape('https://goodyfeed.com/', 'goodyfeed')
-    #scrape('https://www.facebook.com/', 'facebook')
-    #scrape('https://stackoverflow.com', 'stackoverflow')
-    #scrape('https://www.boredpanda.com/', 'bored panda')
+    scrape('https://goodyfeed.com/', 'goodyfeed')
+    scrape('https://www.facebook.com/', 'facebook')
+    scrape('https://stackoverflow.com', 'stackoverflow')
+    scrape('https://www.boredpanda.com/', 'bored panda')
     scrape('https://www.straitstimes.com/', 'the straits times')
     return redirect(url_for('admin'))
 
