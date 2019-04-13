@@ -47,12 +47,13 @@ def checkJSONTiming(data):
     
     fields = ['url', 'time', 'cookie']
     try: 
-        for i in len(data):
+        for i in range(0,len(data)):
             for field in fields:
                 get = data[i][field]
                 
         return True
-    except:
+    except Exception as e:
+        app.logger.info(str(e))
         return False
 
 def isNone(data):
@@ -71,7 +72,29 @@ def index():
 		resp.set_cookie('userId', str(uid))
 
 	return resp
-
+	
+def insertTimeToDB(data):
+    connection = mysql.connector.connect(**config)
+    
+    cursor = connection.cursor(prepared=True)
+    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    
+    if len(data) < 4:
+        app.logger.info('Less than 4 rows')
+        return False
+    else:
+        try:
+            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'],str(datetime.datetime.now()))
+            cursor.execute(statement, value)
+            connection.commit()
+        except Exception as e:
+            app.logger.info('Error: ' + str(e))
+            connection.close()
+            return False
+            
+    connection.close()
+    return True 
+    
 @app.route('/addTiming', methods=['POST'])
 def addTiming():
     data = request.get_json()
@@ -80,20 +103,27 @@ def addTiming():
         return errorMessage
     
     isPass = checkJSONTiming(data)
-    isPass = True
+    
+    app.logger.info(data)
+    
     if isPass:
         result = insertTimeToDB(data)
+        
         if result:
+            app.logger.info('Data inserted')
             return 'Data inserted.'
         else:
+            app.logger.info('Error reuslts is false')
             return errorMessage
     else:
+        app.logger.info('Error with json')
         return errorMessage
         
 @app.route('/getURL', methods=['GET'])
 def getURL():
     level = '5'
     result = getURLFromDB(level)
+    app.logger.info(result)
     return json.dumps(result)
         
 @app.route('/addImages', methods=['POST'])
@@ -125,25 +155,32 @@ def addImg():
 
 @app.route('/getImages', methods=['GET'])
 def getImgByName():
-    #name = request.args.get('name', default = '', type = str)
+    #data = request.get_json()
+    
     name = request.args.get('sitename', default = '', type = str)
     
-    if name == '':
+    if name is None:
         return errorMessage
     else:
+        #name = data['sitename']
+        #app.logger.info(name)
         result = getImagesFromDB(name)
         if len(result) == 0:
             return "No results found"
         return json.dumps(result)
     
 
-@app.route('/getTiming', methods=['GET'])
+@app.route('/getTiming', methods=['POST'])
 def getTiming():
-    url = request.args.get('url', default = '', type = str)
+    data = request.get_json()
+    #url = request.args.get('url', default = '', type = str)
     
-    if url == '':
+    #app.logger.info(url)
+    if data is None:
         return errorMessage
     else:
+        url = data['sitename']
+        app.logger.info(url)
         result = getTimeFromDB(url)
         return json.dumps(result, default=converter)
 
@@ -179,10 +216,10 @@ def results(threshold=None):
 
 @app.route('/initdb', methods=['GET'])
 def init_db():
-    scrape('https://goodyfeed.com/', 'goodyfeed')
-    scrape('https://www.facebook.com/', 'facebook')
-    scrape('https://stackoverflow.com', 'stackoverflow')
-    scrape('https://www.boredpanda.com/', 'bored panda')
+    #scrape('https://goodyfeed.com/', 'goodyfeed')
+    #scrape('https://www.facebook.com/', 'facebook')
+    #scrape('https://stackoverflow.com', 'stackoverflow')
+    #scrape('https://www.boredpanda.com/', 'bored panda')
     scrape('https://www.straitstimes.com/', 'the straits times')
     return redirect(url_for('admin'))
 
