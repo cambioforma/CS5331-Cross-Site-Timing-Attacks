@@ -45,11 +45,49 @@ def getResultsFromDB(threshold):
 
 	return json_data 
 
-
+def getAllExperimentFromDB():
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor(prepared=True)
+    cursor.execute('SELECT * FROM experiment')
+    
+    # extract row headers
+    row_headers=[x[0] for x in cursor.description]
+    rv = cursor.fetchall()
+    json_data=[]
+    
+    for row in rv:
+        _id = row[0]
+        cookie = row[1].decode()
+        url = row[2].decode()
+        time1 = row[3]
+        time2 = row[4]
+        time3 = row[5]
+        time4 = row[6]
+        sitename = row[7].decode()
+        currentDatetime = row[8]
+        
+        d = {
+            'id': _id,
+            'cookie': cookie,
+            'url': url,
+            'sitename': sitename.title(),
+            'time1': time1,
+            'time2': time2,
+            'time3': time3,
+            'time4': time4,
+            'currentDatetime': currentDatetime
+        }
+        
+        json_data.append(d)
+    
+    cursor.close()
+    connection.close()
+    
+    return json_data
+    
 def getTimeFromDB(url) -> List[Dict]:
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor(prepared=True)
-    #cursor.execute('SELECT * FROM experiment')
     cursor.execute('SELECT * FROM experiment where url = %s', (url,))
     
     # extract row headers
@@ -76,7 +114,7 @@ def getTimeFromDB(url) -> List[Dict]:
             'time2': time2,
             'time3': time3,
             'time4': time4,
-            'sitename': sitename,
+            'sitename': sitename.title(),
             'currentDatetime': currentDatetime
         }
         
@@ -124,7 +162,8 @@ def insertTimeToDB(data):
             sitename = getSitenameFromURL(url)
             if sitename is None:
                 sitename = 'ERROR'
-            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'], sitename, str(datetime.datetime.now()))
+            cookie = data[0]['cookie'].split('=')[1]
+            value = (cookie, data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'], sitename, str(datetime.datetime.now()))
             cursor.execute(statement, value)
             connection.commit()
         except Exception as e:
