@@ -221,3 +221,28 @@ def getURLFromDB(level):
     connection.close()
     
     return data
+    
+
+def getURLWithSiteFromDB(level, site):
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor(prepared=True)
+    
+    data=[]
+    
+    cursor.execute('SELECT img_url FROM image WHERE name = %s LIMIT %s', (site,level))
+    
+    # extract row headers
+    row_headers=[x[0] for x in cursor.description]
+    rv = cursor.fetchall()
+    
+    for row in rv:
+        #name = row[0].decode()
+        #base_url = row[1].decode()
+        img_url = row[0].decode()
+        data.append(img_url)
+
+    cursor.close()
+    connection.close()
+    
+    return data
+    

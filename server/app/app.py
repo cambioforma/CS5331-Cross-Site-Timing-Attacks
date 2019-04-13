@@ -21,6 +21,9 @@ config = {
     'database': 'CS5331'
 }
 
+global getURLMode
+global getURLBySite
+
 errorMessage = 'Error: Missing Information.'
 failUpdate = 'Error: Database not updated.'
 successUpdate = 'Success: Database updated.'
@@ -100,7 +103,14 @@ def addTiming():
 @app.route('/getURL', methods=['GET'])
 def getURL():
     level = '5'
-    result = getURLFromDB(level)
+    
+    global getURLMode
+    
+    if getURLMode == 0:
+        result = getURLFromDB(level)
+    elif getURLMode == 1:
+        global getURLBySite
+        result = getURLWithSiteFromDB(level, getURLBySite)
     app.logger.info(result)
     return json.dumps(result)
         
@@ -134,7 +144,6 @@ def addImg():
 @app.route('/getImages', methods=['GET'])
 def getImgByName():
     #data = request.get_json()
-    
     name = request.args.get('sitename', default = '', type = str)
     
     if name is None:
@@ -145,6 +154,12 @@ def getImgByName():
         result = getImagesFromDB(name)
         if len(result) == 0:
             return "No results found"
+        
+        global getURLBySite    
+        getURLBySite = name
+        
+        global getURLMode
+        getURLMode = 1
         return json.dumps(result)
     
 
@@ -164,6 +179,10 @@ def getTiming():
 
 @app.route('/admin', methods=['GET'])
 def admin():
+    global getURLMode
+    #TODO: Add button to start using default mode
+    getURLMode = 0 # default mode
+
     noresults = ''
     generateFail = ''
     generateSuccess = ''
