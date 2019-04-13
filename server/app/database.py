@@ -20,8 +20,10 @@ def getResultsFromDB():
 	row_headers=[x[0] for x in cursor.description]
 	rv = cursor.fetchall()
 	json_data=[]
+	i=1
 
 	for row in rv:
+		
 		_id = row[0]
 		cookie = row[1].decode()
 		url = row[2].decode()
@@ -32,9 +34,11 @@ def getResultsFromDB():
 		sitename = row[7].decode()
 		currentDatetime = row[8]
 
-		diff=(time1-(time2 + time3 + time4)/3)/time1
-		d = [_id, diff]
-		json_data.append(d)
+		if time1>0:
+			diff=(time1-(time2 + time3 + time4)/3)/time1
+			d = [i, diff]
+			json_data.append(d)
+			i=i+1
 
 	cursor.close()
 	connection.close()
