@@ -10,7 +10,58 @@ config = {
     'port': '3306',
     'database': 'CS5331'
 }
-def getResultsFromDB(threshold):
+
+def getNumberofSiteVists(threshold):
+	connection = mysql.connector.connect(**config)
+	cursor = connection.cursor(prepared=True)
+
+	cursor.execute('SELECT * FROM experiment')
+
+	# extract row headers
+	row_headers=[x[0] for x in cursor.description]
+	rv = cursor.fetchall()
+	json_data=[['Domain', 'Yes', 'No']]
+	domainDict={}
+	i=0
+
+	for row in rv:
+		_id = row[0]
+		cookie = row[1].decode()
+		url = row[2].decode()
+		time1 = row[3]
+		time2 = row[4]
+		time3 = row[5]
+		time4 = row[6]
+		sitename = row[7].decode()
+		currentDatetime = row[8]
+		
+		if time1>0:
+			diff=(time1-(time2 + time3 + time4)/3)/time1
+
+			if sitename in domainDict:
+				count = domainDict[sitename]
+				if diff > (threshold/100):
+					count[0] = count[0] + 1
+					count[1] = count[1] + 1
+				else:
+					count[0] = count[0] + 1
+				domainDict[sitename] = count
+			else:
+				if diff > (threshold/100):
+					domainDict[sitename] = [1,1]
+				else:
+					domainDict[sitename] = [1,0]
+
+	for x, y in domainDict.items():
+		d = [x, y[1] , y[0]-y[1]]
+		json_data.append(d)
+
+	cursor.close()
+	connection.close()
+
+	return json_data
+
+def getPercentDiff(threshold):
 	connection = mysql.connector.connect(**config)
 	cursor = connection.cursor(prepared=True)
 

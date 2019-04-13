@@ -206,21 +206,25 @@ def admin():
     return render_template("admin.html", imglist=imglist, generateFail=generateFail, generateSuccess=generateSuccess, noresults=noresults, isConfig=isConfig, sitemode=getURLBySite)
 
 @app.route('/results', methods=['GET'])
-@app.route('/results/<threshold>', methods=['GET'])
-def results(threshold=None):
+@app.route('/results/<chart>/<threshold>', methods=['GET'])
+@app.route('/results/<chart>/<threshold>', methods=['GET'])
+def results(threshold=None, chart=None):
+
 	if threshold is not None:
 		threshold = int(threshold)
 
-	data = getResultsFromDB(threshold)
+	if chart == "scatterplot":
+		data = getPercentDiff(threshold)
+	elif chart == "barchart":
+		data = getNumberofSiteVists(threshold)
 
 	if threshold is None:
 		return render_template("results.html")
 	elif 0 <= threshold < 100:
+		
 		resp = make_response(json.dumps(data))
 		resp.headers['content-type'] = 'application/json'
 		return resp
-	elif 0 < threshold < 100:
-		return render_template("results.html")
 	else:
 		return render_template("results.html")
 
