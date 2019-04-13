@@ -6,7 +6,6 @@
 
 // TODO: Add in a parameter to determine where is JS called
 function measureURLsAccessTime() {
-	
 	var urlToGetFrom = "/getURL";
 	
 	atomic(urlToGetFrom)
@@ -20,7 +19,6 @@ function measureURLsAccessTime() {
 		.catch(function(error) {
 			console.log("error description", error.statusText);
 		});
-	
 }
 
 function loopUrlsForMeasurement(count, urlsArr) {
@@ -94,11 +92,12 @@ function loadImage(url) {
 }
 
 function getCookie() {
-	console.log(document.cookie);
+	var cookie = document.cookie;
+	return cookie;
 }
 
 function storeAccessTime(url, accessTime) {
-	var cookie = "abc";
+	var cookie = getCookie();
 	var accessTimeJson = { "cookie" : cookie, "url" : url, "time" : accessTime};
 	
 	return accessTimeJson;
