@@ -25,7 +25,7 @@ global getURLMode
 global getURLBySite
 
 errorMessage = 'Error: Missing Information.'
-failUpdate = 'Error: Database not updated.'
+failUpdate = 'Error: Database not updated. Was the site already added to the list?'
 successUpdate = 'Success: Database updated.'
 
     
@@ -139,8 +139,8 @@ def addImg():
     elif len(images) > 0:
         return redirect(url_for("admin", generateSuccess=successUpdate))
     else:
-        return redirect(url_for("admin", noresults='No resources found on target website.'))
-
+        return redirect(url_for("admin", noresults='No usable resources found on target website. Try another site?'))
+        
 @app.route('/getImages', methods=['GET'])
 def getImgByName():
     #data = request.get_json()
