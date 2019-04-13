@@ -22,7 +22,9 @@ config = {
 }
 
 global getURLMode
+getURLMode = 0 # default mode
 global getURLBySite
+getURLBySite = ''
 
 errorMessage = 'Error: Missing Information.'
 failUpdate = 'Error: Database not updated. Was the site already added to the list?'
@@ -146,21 +148,25 @@ def getImgByName():
     #data = request.get_json()
     name = request.args.get('sitename', default = '', type = str)
     
+    global getURLBySite
+    
     if name is None:
         return errorMessage
     else:
-        #name = data['sitename']
-        #app.logger.info(name)
-        result = getImagesFromDB(name)
-        if len(result) == 0:
-            return "No results found"
-        
-        global getURLBySite    
-        getURLBySite = name
-        
-        global getURLMode
-        getURLMode = 1
-        return json.dumps(result)
+        if name == "All":
+            # default configuration
+            getURLBySite = "All"
+            return redirect(url_for("admin", isConfig=True))
+        else:
+            result = getImagesFromDB(name)
+            if len(result) == 0:
+                return redirect(url_for("admin", isConfig=False))
+                
+            getURLBySite = name
+            
+            global getURLMode
+            getURLMode = 1
+            return redirect(url_for("admin", isConfig=True))
     
 
 @app.route('/getTiming', methods=['POST'])
@@ -179,23 +185,25 @@ def getTiming():
 
 @app.route('/admin', methods=['GET'])
 def admin():
-    global getURLMode
-    #TODO: Add button to start using default mode
-    getURLMode = 0 # default mode
-
+    
     noresults = ''
     generateFail = ''
     generateSuccess = ''
+    isConfig = False
     
     if 'generateFail' in request.args:
         generateFail = request.args['generateFail']
-    if 'generateSuccess' in request.args:
+    elif 'generateSuccess' in request.args:
         generateSuccess = request.args['generateSuccess']
-    if 'noresults' in request.args:
-        noresults = request.args['noresults']
+    elif 'noresults' in request.args:
+        noresults = request.args['noresults']  
+    elif 'isConfig' in request.args:
+        isConfig = request.args['isConfig']
     
     imglist = getNameOfWebsiteFromDB()
-    return render_template("admin.html", imglist=imglist, generateFail=generateFail, generateSuccess=generateSuccess, noresults=noresults)
+    global getURLBySite
+    
+    return render_template("admin.html", imglist=imglist, generateFail=generateFail, generateSuccess=generateSuccess, noresults=noresults, isConfig=isConfig, sitemode=getURLBySite)
 
 @app.route('/results', methods=['GET'])
 @app.route('/results/<threshold>', methods=['GET'])

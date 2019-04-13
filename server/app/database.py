@@ -145,7 +145,7 @@ def getNameOfWebsiteFromDB():
     for row in rv:
         #name = row[0].decode()
         #base_url = row[1].decode()
-        name = row[0].decode()
+        name = row[0].decode().title()
         
         data.append(name)
     
