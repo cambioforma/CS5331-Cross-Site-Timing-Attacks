@@ -10,7 +10,7 @@ config = {
     'port': '3306',
     'database': 'CS5331'
 }
-def getResultsFromDB():
+def getResultsFromDB(threshold):
 	connection = mysql.connector.connect(**config)
 	cursor = connection.cursor(prepared=True)
 
@@ -23,7 +23,6 @@ def getResultsFromDB():
 	i=1
 
 	for row in rv:
-		
 		_id = row[0]
 		cookie = row[1].decode()
 		url = row[2].decode()
@@ -36,9 +35,10 @@ def getResultsFromDB():
 
 		if time1>0:
 			diff=(time1-(time2 + time3 + time4)/3)/time1
-			d = [i, diff]
-			json_data.append(d)
-			i=i+1
+			if (threshold is None) or (diff > (threshold/100)):
+				d = [i, diff]
+				json_data.append(d)
+				i=i+1
 
 	cursor.close()
 	connection.close()

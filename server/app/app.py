@@ -208,16 +208,21 @@ def admin():
 @app.route('/results', methods=['GET'])
 @app.route('/results/<threshold>', methods=['GET'])
 def results(threshold=None):
-	data = getResultsFromDB()
+	if threshold is not None:
+		threshold = int(threshold)
+
+	data = getResultsFromDB(threshold)
 
 	if threshold is None:
-		return render_template("results.html", data=json.dumps(data))
-	elif threshold=="data":
+		return render_template("results.html")
+	elif 0 <= threshold < 100:
 		resp = make_response(json.dumps(data))
 		resp.headers['content-type'] = 'application/json'
 		return resp
+	elif 0 < threshold < 100:
+		return render_template("results.html")
 	else:
-		return render_template("results.html", data=json.dumps(data))
+		return render_template("results.html")
 
 @app.route('/initdb', methods=['GET'])
 def init_db():
