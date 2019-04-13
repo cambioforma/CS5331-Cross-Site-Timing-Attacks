@@ -29,7 +29,7 @@ def getResultsFromDB():
 		time2 = row[4]
 		time3 = row[5]
 		time4 = row[6]
-		sitename = row[7]
+		sitename = row[7].decode()
 		currentDatetime = row[8]
 
 		diff=(time1-(time2 + time3 + time4)/3)/time1
