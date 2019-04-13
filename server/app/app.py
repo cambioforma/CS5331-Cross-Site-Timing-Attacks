@@ -219,6 +219,12 @@ def results(threshold=None):
 	else:
 		return render_template("results.html", data=json.dumps(data))
 
+@app.route('/experiment', methods=['GET'])
+def showExperiment():
+    data = getAllExperimentFromDB()
+    app.logger.info(data)
+    return render_template("experiment.html", data=data)
+
 @app.route('/initdb', methods=['GET'])
 def init_db():
     scrape('https://goodyfeed.com/', 'goodyfeed')

@@ -65,8 +65,9 @@
     </header>
 
     <main role="main" class="flex-shrink-0">
-	    <h2>Admin Pannel</h2>
 	    <div class="container">
+	        <br/>
+	        <h2>Admin Pannel</h2>
 	        <h3 class-"mt-5">Step 1: Enter Target Site Details</h3>
 	        <form action="/addImages" method="POST">
 	            <div class="form-group">
@@ -128,15 +129,17 @@
 	                Successfully configured attacker site.
                 </div>
 	        {% endif %}
+	        
+	        <div>
+                <a class="btn btn-info" href="http://127.0.0.1:5000/experiment">Show Results</a>
+	            <br/><br/><br/>
+            </div>
 	    </div>
-	    <div class="container">
-	        <h3 class-"mt-5"></h3>
-        </div>
+	    
 	</main>
-	
 	<footer class="footer mt-auto py-3">
       <div class="container">
-        <p class="text-muted">Attacker Site can be found <a href="http://127.0.0.1:5000/experiment">here</a></p>
+        <p class="text-muted">Attacker Site can be found <a href="http://127.0.0.1:5000/">here</a></p>
       </div>
     </footer>
 </body>
