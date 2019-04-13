@@ -40,11 +40,11 @@ def converter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
         
-def crawlURL(base_url, name):
+def scrape(base_url, name):
     images = getImages(base_url)
     
     try:
-        insertImgTODB(base_url, name, images)
+        insertImgToDB(base_url, name, images)
         return True
     except Exception as e:
         app.logger.info(e)
@@ -52,14 +52,12 @@ def crawlURL(base_url, name):
      
     
 def checkJSONTiming(data):
-    print(data)
-    keys = data.keys()
     
     fields = ['url', 'time', 'cookie']
     try: 
-        for key in keys:
+        for i in len(data):
             for field in fields:
-                get = data[key][field]
+                get = data[i][field]
                 
         return True
     except:
@@ -73,7 +71,7 @@ def addTiming():
     if data is None:
         return errorMessage
     
-    #isPass = checkJSONTiming(data)
+    isPass = checkJSONTiming(data)
     isPass = True
     if isPass:
         result = insertTimeToDB(data)
@@ -83,6 +81,12 @@ def addTiming():
             return errorMessage
     else:
         return errorMessage
+        
+@app.route('/getURL', methods=['GET'])
+def getURL():
+    level = '5'
+    result = getURLFromDB(level)
+    return json.dumps(result)
         
 @app.route('/addImages', methods=['POST'])
 def addImg():
@@ -98,13 +102,11 @@ def addImg():
         if base_url == '' or name == '':
             return 'Empty values are not accepted.'
         
-        app.logger.info(base_url)
-        app.logger.info(name)
     except Exception as e:
         app.logger.info(e)
         return 'Missing attribute. Ensure base_url and name are supplied.'
     
-    isSuccess = crawlURL(base_url, name)
+    isSuccess = scrape(base_url, name)
     
     if isSuccess:
         return successUpdate
@@ -133,8 +135,7 @@ def getTiming():
         return errorMessage
     else:
         result = getTimeFromDB(url)
-        app.logger.info(result)
-        return json.dumps(getTimeFromDB(url), default=converter)
+        return json.dumps(result, default=converter)
 
 @app.route('/admin', methods=['GET'])
 def admin():
@@ -155,5 +156,15 @@ def results(threshold=None):
 	else:
 		return render_template("results.html", data=json.dumps(data))
 
+@app.route('/initdb', methods=['GET'])
+def init_db():
+    scrape('https://goodyfeed.com/', 'goodyfeed')
+    scrape('https://www.facebook.com/', 'facebook')
+    scrape('https://stackoverflow.com', 'stackoverflow')
+    scrape('https://www.boredpanda.com/', 'bored panda')
+    scrape('https://www.straitstimes.com/', 'the straits times')
+    return redirect(url_for('admin'))
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
+    

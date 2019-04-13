@@ -146,7 +146,7 @@ def insertTimeToDB(data):
     connection.close()
     return True   
     
-def insertImgTODB(base_url, name, images):
+def insertImgToDB(base_url, name, images):
     connection = mysql.connector.connect(**config)
     
     cursor = connection.cursor(prepared=True)
@@ -163,4 +163,27 @@ def insertImgTODB(base_url, name, images):
     
     connection.close()
     
+def getURLFromDB(level):
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor(prepared=True)
     
+    namelist = getNameOfWebsiteFromDB()
+    data=[]
+        
+    for name in namelist:
+        cursor.execute('SELECT img_url FROM image WHERE name = %s LIMIT %s', (name,level))
+        
+        # extract row headers
+        row_headers=[x[0] for x in cursor.description]
+        rv = cursor.fetchall()
+        
+        for row in rv:
+            #name = row[0].decode()
+            #base_url = row[1].decode()
+            img_url = row[0].decode()
+            data.append(img_url)
+    
+    cursor.close()
+    connection.close()
+    
+    return data
