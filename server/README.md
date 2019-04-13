@@ -43,6 +43,8 @@ Example using curl:
 ### Timing
 `http://127.0.0.1:5000/getTiming?url=<VALUE>`
 
+`curl --header "Content-Type: application/json" --request POST --data '{"sitename":"<VALUE>"}' http://127.0.0.1:5000/getTiming`
+
 ### Images
 `http://127.0.0.1:5000/getImages?name=<VALUE>`
 

@@ -73,28 +73,6 @@ def index():
 
 	return resp
 	
-def insertTimeToDB(data):
-    connection = mysql.connector.connect(**config)
-    
-    cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    
-    if len(data) < 4:
-        app.logger.info('Less than 4 rows')
-        return False
-    else:
-        try:
-            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'],str(datetime.datetime.now()))
-            cursor.execute(statement, value)
-            connection.commit()
-        except Exception as e:
-            app.logger.info('Error: ' + str(e))
-            connection.close()
-            return False
-            
-    connection.close()
-    return True 
-    
 @app.route('/addTiming', methods=['POST'])
 def addTiming():
     data = request.get_json()
