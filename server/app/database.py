@@ -29,7 +29,8 @@ def getResultsFromDB():
 		time2 = row[4]
 		time3 = row[5]
 		time4 = row[6]
-		currentDatetime = row[7]
+		sitename = row[7]
+		currentDatetime = row[8]
 
 		diff=(time1-(time2 + time3 + time4)/3)/time1
 		d = [_id, diff]
@@ -39,26 +40,6 @@ def getResultsFromDB():
 	connection.close()
 
 	return json_data 
-
-def insertTimeToDB(data):
-    connection = mysql.connector.connect(**config)
-    
-    cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    
-    if len(data) < 4:
-        return False
-    else:
-        try:
-            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'],str(datetime.datetime.now()))
-            cursor.execute(statement, value)
-            connection.commit()
-        except Exception as e:
-            connection.close()
-            return False
-            
-    connection.close()
-    return True 
 
 
 def getTimeFromDB(url) -> List[Dict]:
@@ -80,7 +61,8 @@ def getTimeFromDB(url) -> List[Dict]:
         time2 = row[4]
         time3 = row[5]
         time4 = row[6]
-        currentDatetime = row[7]
+        sitename = row[7].decode()
+        currentDatetime = row[8]
         
         d = {
             'id': _id,
@@ -90,6 +72,7 @@ def getTimeFromDB(url) -> List[Dict]:
             'time2': time2,
             'time3': time3,
             'time4': time4,
+            'sitename': sitename,
             'currentDatetime': currentDatetime
         }
         
@@ -100,6 +83,54 @@ def getTimeFromDB(url) -> List[Dict]:
     
     return json_data
     
+def getSitenameFromURL(url):
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor(prepared=True)
+    
+    cursor.execute('SELECT name FROM image where img_url = %s', (url,))
+    
+    # extract row headers
+    row_headers=[x[0] for x in cursor.description]
+    rv = cursor.fetchall()
+    
+    for row in rv:
+        name = row[0].decode()
+        #base_url = row[1].decode()
+        #img_url = row[2].decode()
+        
+        return name
+    
+    cursor.close()
+    connection.close()
+    
+    return None
+
+
+def insertTimeToDB(data):
+    connection = mysql.connector.connect(**config)
+    
+    cursor = connection.cursor(prepared=True)
+    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, sitename, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    
+    if len(data) < 4:
+        return False
+    else:
+        try:
+            url = data[0]['url']
+            sitename = getSitenameFromURL(url)
+            if sitename is None:
+                sitename = 'ERROR'
+            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'], sitename, str(datetime.datetime.now()))
+            cursor.execute(statement, value)
+            connection.commit()
+        except Exception as e:
+            connection.close()
+            return False
+            
+    connection.close()
+    return True 
+    
+
 def getNameOfWebsiteFromDB():
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor(prepared=True)
