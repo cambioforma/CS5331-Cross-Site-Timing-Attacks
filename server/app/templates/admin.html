@@ -53,7 +53,7 @@ code {
     <main role="main" class="flex-shrink-0">
 	    <h2>Admin Pannel</h2>
 	    <div class="container">
-	        <h3 class-"mt-5">Step 1: Enter test site details</h3>
+	        <h3 class-"mt-5">Step 1: Enter Target Site Details</h3>
 	        <form action="/addImages" method="POST">
 	            <div class="form-group">
 	                <label>Name: </label>
@@ -64,13 +64,13 @@ code {
 	                <input type = "text" class="form-control" name = "base_url" /></p>
 		            
 	            </div>
-	            <input type="submit" class="btn btn-primary" value="Get test site links">
+	            <input type="submit" class="btn btn-primary" value="Generate Links">
 	        </form>
 	        
 	    </div>
 	    
 	    <div class="container">
-	        <h3 class-"mt-5">Step 2: Select test site name</h3>
+	        <h3 class-"mt-5">Step 2: Select Target Site Name</h3>
             {% if imglist|length > 0%}
 	            <form action="/getImages" method="GET">
 	                <div class="dropdown">
@@ -81,7 +81,7 @@ code {
 		                {% endfor %}
 		                </select>
 		                <br><br>
-		                <input type="submit" class="btn btn-primary" value="Display test site links">
+		                <input type="submit" class="btn btn-primary" value="Display Links">
 	                </div>
 	            </form>
             {% else %}

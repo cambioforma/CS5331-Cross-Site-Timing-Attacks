@@ -59,7 +59,8 @@ def getTimeFromDB(url) -> List[Dict]:
         time2 = row[4]
         time3 = row[5]
         time4 = row[6]
-        currentDatetime = row[7]
+        timediff = row[7]
+        currentDatetime = row[8]
         
         d = {
             'id': _id,
@@ -69,6 +70,7 @@ def getTimeFromDB(url) -> List[Dict]:
             'time2': time2,
             'time3': time3,
             'time4': time4,
+            'timediff': timediff,
             'currentDatetime': currentDatetime
         }
         
@@ -129,13 +131,13 @@ def insertTimeToDB(data):
     connection = mysql.connector.connect(**config)
     
     cursor = connection.cursor(prepared=True)
-    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    statement = "INSERT INTO experiment(cookie, url, time1, time2, time3, time4, timeDiff, currentDatetime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
     
     if len(data) < 4:
         return False
     else:
         try:
-            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'], str(datetime.datetime.now()))
+            value = (data[0]['cookie'], data[0]['url'], data[0]['time'], data[1]['time'], data[2]['time'], data[3]['time'], 0.6,str(datetime.datetime.now()))
             cursor.execute(statement, value)
             connection.commit()
         except Exception as e:
