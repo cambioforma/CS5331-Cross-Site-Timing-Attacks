@@ -65,8 +65,25 @@ code {
 		            
 	            </div>
 	            <input type="submit" class="btn btn-primary" value="Generate Links">
+	            
 	        </form>
 	        
+	        <br/><br/>
+	        <div>
+	            {% if generateSuccess is defined and generateSuccess|length %}
+                    <div class="alert alert-success" role="alert">
+                      {{ generateSuccess }}
+                    </div>
+                {% elif generateFail is defined and generateFail|length %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ generateFail }}
+                    </div>
+                {% elif noresults is defined and noresults|length %}
+                    <div class="alert alert-info" role="alert">
+                        {{ noresults }}
+                    </div>
+                {% endif %}
+            </div>
 	    </div>
 	    
 	    <div class="container">

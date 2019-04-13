@@ -160,8 +160,10 @@ def insertImgToDB(base_url, name, images):
             connection.commit()
         except Exception as e:
             print(str(e))
+            return False
     
     connection.close()
+    return True
     
 def getURLFromDB(level):
     connection = mysql.connector.connect(**config)

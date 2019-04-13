@@ -22,19 +22,9 @@ config = {
 }
 
 errorMessage = 'Error: Missing Information.'
-failUpdate = 'ERROR: Database not updated.'
-successUpdate = 'SUCCESS: Database updated.'
+failUpdate = 'Error: Database not updated.'
+successUpdate = 'Success: Database updated.'
 
-@app.route('/', methods=['GET'])
-def index():
-	resp = make_response(render_template("index.html"))
-	if 'userId' in request.cookies:
-		user = request.cookies.get('userId')
-	else:
-		uid = random.randint(1,2**64)
-		resp.set_cookie('userId', str(uid))
-
-	return resp
     
 def converter(o):
     if isinstance(o, datetime.datetime):
@@ -42,15 +32,17 @@ def converter(o):
         
 def scrape(base_url, name):
     images = getImages(base_url)
-    
+        
     try:
-        insertImgToDB(base_url, name, images)
-        return True
+        result = insertImgToDB(base_url, name, images)
+        if result is True:
+            return images
+        else:
+            return None
     except Exception as e:
         app.logger.info(e)
-        return False
+        return None
      
-    
 def checkJSONTiming(data):
     
     fields = ['url', 'time', 'cookie']
@@ -62,7 +54,23 @@ def checkJSONTiming(data):
         return True
     except:
         return False
- 
+
+def isNone(data):
+    if data is None:
+        return True
+    else:
+        return False
+
+@app.route('/', methods=['GET'])
+def index():
+	resp = make_response(render_template("index.html"))
+	if 'userId' in request.cookies:
+		user = request.cookies.get('userId')
+	else:
+		uid = random.randint(1,2**64)
+		resp.set_cookie('userId', str(uid))
+
+	return resp
 
 @app.route('/addTiming', methods=['POST'])
 def addTiming():
@@ -100,19 +108,21 @@ def addImg():
         name = data['name'][0].lower()
         
         if base_url == '' or name == '':
-            return 'Empty values are not accepted.'
+            return redirect(url_for("admin", generateFail='Empty values are not accepted.'))
         
     except Exception as e:
         app.logger.info(e)
-        return 'Missing attribute. Ensure base_url and name are supplied.'
+        return redirect(url_for("admin", generateFail='Missing attribute. Ensure base_url and name are supplied.'))
     
-    isSuccess = scrape(base_url, name)
+    images = scrape(base_url, name)
     
-    if isSuccess:
-        return successUpdate
-        
-    return failUpdate
-    
+    if images is None:
+        return redirect(url_for("admin", generateFail=failUpdate))
+    elif len(images) > 0:
+        return redirect(url_for("admin", generateSuccess=successUpdate))
+    else:
+        return redirect(url_for("admin", noresults='No resources found on target website.'))
+
 @app.route('/getImages', methods=['GET'])
 def getImgByName():
     #name = request.args.get('name', default = '', type = str)
@@ -139,8 +149,19 @@ def getTiming():
 
 @app.route('/admin', methods=['GET'])
 def admin():
+    noresults = ''
+    generateFail = ''
+    generateSuccess = ''
+    
+    if 'generateFail' in request.args:
+        generateFail = request.args['generateFail']
+    if 'generateSuccess' in request.args:
+        generateSuccess = request.args['generateSuccess']
+    if 'noresults' in request.args:
+        noresults = request.args['noresults']
+    
     imglist = getNameOfWebsiteFromDB()
-    return render_template("admin.html", imglist=imglist)
+    return render_template("admin.html", imglist=imglist, generateFail=generateFail, generateSuccess=generateSuccess, noresults=noresults)
 
 @app.route('/results', methods=['GET'])
 @app.route('/results/<threshold>', methods=['GET'])
