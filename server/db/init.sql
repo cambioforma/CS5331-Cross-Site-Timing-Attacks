@@ -23,6 +23,4 @@ img_url VARCHAR(1024) NOT NULL,
 PRIMARY KEY(name, img_url)
 );
 
-INSERT INTO experiment(cookie, url, time1, time2, time3, time4, sitename, currentDatetime) 
-VALUES ('COOKIEVALUE', 'test.com', '10', '2', '3', '5', 'TEST', '2019-01-01 12:12:12');
  
