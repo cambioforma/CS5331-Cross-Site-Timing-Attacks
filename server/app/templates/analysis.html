@@ -1,4 +1,6 @@
-<html>
+{% extends "base.html" %}
+{% set active_page = "experiment" %}
+{% block body %}
    <head>
       <title>Google Charts Tutorial</title>
       <script type = "text/javascript" src = "https://www.gstatic.com/charts/loader.js"></script>
@@ -84,4 +86,6 @@
 		getScatterData();
 		getBarData();
 	</script>
+{% endblock %}
+{% block footer %}Cross-site Timing Attack Analysis{% endblock %}
 </html>
