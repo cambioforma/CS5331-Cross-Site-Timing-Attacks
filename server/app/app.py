@@ -205,9 +205,9 @@ def admin():
     
     return render_template("admin.html", imglist=imglist, generateFail=generateFail, generateSuccess=generateSuccess, noresults=noresults, isConfig=isConfig, sitemode=getURLBySite)
 
-@app.route('/results', methods=['GET'])
-@app.route('/results/<chart>/<threshold>', methods=['GET'])
-@app.route('/results/<chart>/<threshold>', methods=['GET'])
+@app.route('/analysis', methods=['GET'])
+@app.route('/analysis/<chart>/<threshold>', methods=['GET'])
+@app.route('/analysis/<chart>/<threshold>', methods=['GET'])
 def results(threshold=None, chart=None):
 
 	if threshold is not None:
@@ -219,14 +219,14 @@ def results(threshold=None, chart=None):
 		data = getNumberofSiteVists(threshold)
 
 	if threshold is None:
-		return render_template("results.html")
+		return render_template("analysis.html")
 	elif 0 <= threshold < 100:
 		
 		resp = make_response(json.dumps(data))
 		resp.headers['content-type'] = 'application/json'
 		return resp
 	else:
-		return render_template("results.html")
+		return render_template("analysis.html")
 
 @app.route('/experiment', methods=['GET'])
 def showExperiment():

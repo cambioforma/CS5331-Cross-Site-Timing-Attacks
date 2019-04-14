@@ -23,15 +23,15 @@
 		<div id = "barchart" style = "width: 550px; height: 400px; margin: 0 auto"></div>
    </body>
 	<script language = "JavaScript">
-		var scatterDataURL = '/results/scatterplot/0';
-		var barDataURL = '/results/barchart/0';
+		var scatterDataURL = '/analysis/scatterplot/0';
+		var barDataURL = '/analysis/barchart/0';
 		var scatterData = [];
 		var barData = [];
 
 		function changeURL() {
 			var e = document.getElementById("threshold");
-			scatterDataURL = 'results/scatterplot/' + e.options[e.selectedIndex].value;
-			barDataURL = 'results/barchart/' + e.options[e.selectedIndex].value;
+			scatterDataURL = 'analysis/scatterplot/' + e.options[e.selectedIndex].value;
+			barDataURL = 'analysis/barchart/' + e.options[e.selectedIndex].value;
 			getScatterData();
 			getBarData();
 		}
