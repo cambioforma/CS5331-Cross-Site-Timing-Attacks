@@ -231,7 +231,6 @@ def results(threshold=None, chart=None):
 @app.route('/experiment', methods=['GET'])
 def showExperiment():
     data = getAllExperimentFromDB()
-    app.logger.info(data)
     return render_template("experiment.html", data=data)
 
 @app.route('/initdb', methods=['GET'])
