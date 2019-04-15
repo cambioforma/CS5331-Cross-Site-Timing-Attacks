@@ -1,10 +1,3 @@
-// Measure access time of URL(s)
-// Access time:
-// 1) >0: Unblocked domain
-// 2) 0 : CORS blocked domain
-// 3) -1: Unaccessible domain (network errors etc)
-
-// TODO: Add in a parameter to determine where is JS called
 function measureURLsAccessTime() {
 	var urlToGetFrom = "/getURL";
 	
@@ -17,7 +10,7 @@ function measureURLsAccessTime() {
 			});
 		})
 		.catch(function(error) {
-			console.log("error description", error.statusText);
+			console.log("Error: ", error.statusText);
 		});
 }
 
@@ -104,10 +97,13 @@ function storeAccessTime(url, accessTime) {
 }
 
 function sendAccessTimeToServer(accessTimeArr) {
-	console.log(accessTimeArr);
-	
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", "/addTiming");
     xhr.setRequestHeader("Content-Type", "application/json");
+    
+    xhr.onerror = function() {
+    	console.log("Error: " + xhr.statusText);
+    }
+    
     xhr.send(JSON.stringify(accessTimeArr));
 }
