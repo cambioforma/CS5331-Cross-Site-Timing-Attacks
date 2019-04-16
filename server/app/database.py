@@ -37,36 +37,28 @@ def getNumberofSiteVists(threshold):
 
 		if time1>0:
 			diff=(time1-(time2 + time3 + time4)/3)/time1
-
 			if sitename in domainDict:
 				if cookie in domainDict[sitename]:
 					count = domainDict[sitename][cookie]
-					if diff > (threshold/100):
-						count[0] = count[0] + 1
-						count[1] = count[1] + 1
-					else:
-						count[0] = count[0] + 1
+					count[0] = count[0] + 1
+					count[1] = count[1] + diff
 					domainDict[sitename][cookie] = count
 				else:
-					if diff > (threshold/100):
-						domainDict[sitename][cookie] = [1,1]
-					else:
-						domainDict[sitename][cookie] = [1,0]
+					domainDict[sitename][cookie] = [1, diff]
 			else:
-				if diff > (threshold/100):
-					domainDict[sitename] = {}
-					domainDict[sitename][cookie] = [1,1]
-				else:
-					domainDict[sitename] = {}
-					domainDict[sitename][cookie] = [1,0]
+				domainDict[sitename] = {}
+				domainDict[sitename][cookie] = [1, diff]
 
 	for sitename, y in domainDict.items():
-		total = 0
+		links = 0;
 		yes = 0;
+		diff = 0.0;
 		for cookie, data in y.items():
-			total = total + data[0]
-			yes = yes + data[1]
-		d = [sitename, total , total-yes]
+			diff = diff + data[1]
+			links = links + 1
+			if (diff/links) > (threshold/100): 
+				yes = yes + 1		
+		d = [sitename, yes , links-yes]
 		json_data.append(d)
 
 	cursor.close()
