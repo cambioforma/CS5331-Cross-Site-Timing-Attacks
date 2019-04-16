@@ -1,5 +1,7 @@
 # Server Instructions
 
+To start with some examples, access 127.0.0.1:5000/initdb. 
+
 ## Server: Flask
 Install docker.io and docker-compose.
 
@@ -26,6 +28,7 @@ When refreshing database:
 ## Database Tables:
 
 experiment(id, cookie, url, time1, time2, time3, time4, sitename, currentDatetime)
+
 image(name, base_url, img_url)
 
 ## Insert to Database
