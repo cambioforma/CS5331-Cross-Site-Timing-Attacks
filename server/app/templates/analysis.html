@@ -9,8 +9,10 @@
 <main role="main" class="flex-shrink-0"><div class="container">
 	</br>
 	<h2>Analysis</h2>
-	<h3 class-"mt-5">Select percentage threshold:</h3>
-	<div class="dropdown"><select id = "threshold" name="Percentage Threshold:" onchange="changeURL()">
+	<img src="{{ url_for('static', filename='pd.png') }}" class="rounded mx-auto d-block"></br></br>
+	<div><table><tbody><tr>
+	<td><h3 class-"mt-5"="">Select percentage threshold:</h3></td>
+	<td><div class="dropdown text-center"><select id="threshold" name="Percentage Threshold:" onchange="changeURL()">
 		<option value="0">0</option>
 		<option value="10">10</option>
 		<option value="20">20</option>
@@ -21,7 +23,9 @@
 		<option value="70">70</option>
 		<option value="80">80</option>
 		<option value="90">90</option>
-	</select></div>
+	</select></div></td>
+	</tr></tbody></table>
+	</div>
 	<div id = "scatterplot" style = "width: 550px; height: 400px; float: left; margin: 0 auto"></div>
 	<div id = "barchart" style = "width: 550px; height: 400px; float: right; margin: 0 auto"></div>
 	<center>*Results may vary due to network conditions</center></br></br>
