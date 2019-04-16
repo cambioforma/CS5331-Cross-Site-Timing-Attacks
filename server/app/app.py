@@ -239,7 +239,7 @@ def init_db():
     scrape('https://www.facebook.com/', 'facebook')
     scrape('https://stackoverflow.com', 'stackoverflow')
     scrape('https://www.boredpanda.com/', 'bored panda')
-    scrape('https://www.straitstimes.com/', 'the straits times')
+    scrape('https://www.singaporetech.edu.sg/', 'sit')
     scrape('https://www.amazon.com/', 'amazon')
     scrape('https://www.reddit.com/', 'reddit')
     scrape('https://www.tumblr.com/', 'tumblr')
