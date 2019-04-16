@@ -34,26 +34,39 @@ def getNumberofSiteVists(threshold):
 		time4 = row[6]
 		sitename = row[7].decode()
 		currentDatetime = row[8]
-		
+
 		if time1>0:
 			diff=(time1-(time2 + time3 + time4)/3)/time1
 
 			if sitename in domainDict:
-				count = domainDict[sitename]
-				if diff > (threshold/100):
-					count[0] = count[0] + 1
-					count[1] = count[1] + 1
+				if cookie in domainDict[sitename]:
+					count = domainDict[sitename][cookie]
+					if diff > (threshold/100):
+						count[0] = count[0] + 1
+						count[1] = count[1] + 1
+					else:
+						count[0] = count[0] + 1
+					domainDict[sitename][cookie] = count
 				else:
-					count[0] = count[0] + 1
-				domainDict[sitename] = count
+					if diff > (threshold/100):
+						domainDict[sitename][cookie] = [1,1]
+					else:
+						domainDict[sitename][cookie] = [1,0]
 			else:
 				if diff > (threshold/100):
-					domainDict[sitename] = [1,1]
+					domainDict[sitename] = {}
+					domainDict[sitename][cookie] = [1,1]
 				else:
-					domainDict[sitename] = [1,0]
+					domainDict[sitename] = {}
+					domainDict[sitename][cookie] = [1,0]
 
-	for x, y in domainDict.items():
-		d = [x, y[1] , y[0]-y[1]]
+	for sitename, y in domainDict.items():
+		total = 0
+		yes = 0;
+		for cookie, data in y.items():
+			total = total + data[0]
+			yes = yes + data[1]
+		d = [sitename, total , total-yes]
 		json_data.append(d)
 
 	cursor.close()
@@ -71,7 +84,8 @@ def getPercentDiff(threshold):
 	row_headers=[x[0] for x in cursor.description]
 	rv = cursor.fetchall()
 	json_data=[]
-	i=1
+	domainDict={}
+	i=1;
 
 	for row in rv:
 		_id = row[0]
@@ -87,14 +101,23 @@ def getPercentDiff(threshold):
 		if time1>0:
 			diff=(time1-(time2 + time3 + time4)/3)/time1
 			if (threshold is None) or (diff > (threshold/100)):
-				d = [i, diff]
-				json_data.append(d)
-				i=i+1
+				experimentSet = sitename + cookie
+				if sitename in domainDict:
+					count = domainDict[experimentSet]
+					count[0] = count[0] + 1
+					count[1] = count[1] + diff
+				else:
+					domainDict[experimentSet] = [1, diff]
+	
+	for x, y in domainDict.items():
+		d = [i, y[1]/y[0]]
+		json_data.append(d)
+		i = i + 1
 
 	cursor.close()
 	connection.close()
 
-	return json_data 
+	return json_data
 
 def getAllExperimentFromDB():
     connection = mysql.connector.connect(**config)
