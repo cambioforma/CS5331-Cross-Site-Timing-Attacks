@@ -240,9 +240,9 @@ def init_db():
     scrape('https://stackoverflow.com', 'stackoverflow')
     scrape('https://www.boredpanda.com/', 'bored panda')
     scrape('https://www.straitstimes.com/', 'the straits times')
-	scrape('https://www.amazon.com/', 'amazon')
-	scrape('https://www.reddit.com/', 'reddit')
-	scrape('https://www.tumblr.com/', 'tumblr')
+    scrape('https://www.amazon.com/', 'amazon')
+    scrape('https://www.reddit.com/', 'reddit')
+    scrape('https://www.tumblr.com/', 'tumblr')
     return redirect(url_for('admin'))
 
 if __name__ == '__main__':
