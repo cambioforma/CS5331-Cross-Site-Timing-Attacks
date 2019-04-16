@@ -25,7 +25,8 @@ When refreshing database:
 
 ## Database Tables:
 
-timing(cookie, url, time, sequence)
+experiment(id, cookie, url, time1, time2, time3, time4, sitename, currentDatetime)
+image(name, base_url, img_url)
 
 ## Insert to Database
 
